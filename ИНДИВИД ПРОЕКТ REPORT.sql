@@ -1,8 +1,8 @@
 
 CREATE VIEW REPORT AS
 
---1)œ–Œ—–Œ◊≈ÕÕ€… œ¿—œŒ–“
-SELECT TRANS_DATE AS  FRAUD_DT, PASSPORT_NUM AS PASSPORT, LAST_NAME ||' '|| FIRST_NAME ||' '|| PATRINYMIC AS FIO , PHONE , '—Œ¬≈–ÿ≈Õ»≈ Œœ≈–¿÷»… — œ–Œ—–Œ◊≈ÕÕ€Ã œ¿œŒ–“ŒÃ' AS FRAUD_TYPE, SYSDATE AS REPORT_DT
+--1)–ü–†–û–°–†–û–ß–ï–ù–ù–´–ô –ü–ê–°–ü–û–†–¢
+SELECT TRANS_DATE AS  FRAUD_DT, PASSPORT_NUM AS PASSPORT, LAST_NAME ||' '|| FIRST_NAME ||' '|| PATRINYMIC AS FIO , PHONE , '–°–û–í–ï–†–®–ï–ù–ò–ï –û–ü–ï–†–ê–¶–ò–ô –° –ü–†–û–°–†–û–ß–ï–ù–ù–´–ú –ü–ê–ü–û–†–¢–û–ú' AS FRAUD_TYPE, SYSDATE AS REPORT_DT
 FROM(SELECT *
            FROM FACT_TRANSACTIONS T
           JOIN DIM_CARDS C
@@ -14,8 +14,8 @@ FROM(SELECT *
           WHERE t.trans_date>= CL.PASSPORT_VALID_TO +1)
 UNION ALL
 
---2)œ–Œ—–Œ◊≈ÕÕ€… ƒŒ√Œ¬Œ–
-SELECT TRANS_DATE AS FRAUD_DT, PASSPORT_NUM AS PASSPORT , LAST_NAME ||' '|| FIRST_NAME ||' '|| PATRINYMIC AS FIO, PHONE , '—Œ¬≈–ÿ≈Õ»≈ Œœ≈–¿÷»… — œ–Œ—–Œ◊≈ÕÕ€Ã ƒŒ√Œ¬Œ–ŒÃ' AS FRAUD_TYPE, SYSDATE AS REPORT_DT
+--2)–ü–†–û–°–†–û–ß–ï–ù–ù–´–ô –î–û–ì–û–í–û–†
+SELECT TRANS_DATE AS FRAUD_DT, PASSPORT_NUM AS PASSPORT , LAST_NAME ||' '|| FIRST_NAME ||' '|| PATRINYMIC AS FIO, PHONE , '–°–û–í–ï–†–®–ï–ù–ò–ï –û–ü–ï–†–ê–¶–ò–ô –° –ü–†–û–°–†–û–ß–ï–ù–ù–´–ú –î–û–ì–û–í–û–†–û–ú' AS FRAUD_TYPE, SYSDATE AS REPORT_DT
 FROM (SELECT * 
                FROM FACT_TRANSACTIONS T
                  JOIN DIM_CARDS C
@@ -27,9 +27,9 @@ FROM (SELECT *
             WHERE t.trans_date>= A.VALID_TO +1)
 
 UNION ALL
---3) —Œ¬≈–ÿ≈Õ»≈ Œœ≈–¿÷»… ¬ –¿«Õ€’ √Œ–Œƒ¿’ ¬ “≈◊≈Õ»≈ ŒƒÕŒ√Œ ◊¿—¿
+--3) √ë√é√Ç√Ö√ê√ò√Ö√ç√à√Ö √é√è√Ö√ê√Ä√ñ√à√â √Ç √ê√Ä√á√ç√õ√ï √É√é√ê√é√Ñ√Ä√ï √Ç √í√Ö√ó√Ö√ç√à√Ö √é√Ñ√ç√é√É√é √ó√Ä√ë√Ä
 
-select t1. td AS FRAUD_DT, c.PASSPORT_NUM AS PASSPORT,  C.LAST_NAME ||' '|| C.FIRST_NAME ||' '|| C.PATRINYMIC AS FIO, C.PHONE AS PHONE, 'Œœ≈–¿÷»B ¬ –¿«Õ€’ √Œ–Œƒ¿’ ¬ “≈◊≈Õ»≈ ŒƒÕŒ√Œ ◊¿—¿ ' AS FRAUD_TYPE, SYSDATE AS REPORT_DT
+select t1. td AS FRAUD_DT, c.PASSPORT_NUM AS PASSPORT,  C.LAST_NAME ||' '|| C.FIRST_NAME ||' '|| C.PATRINYMIC AS FIO, C.PHONE AS PHONE, '√é√è√Ö√ê√Ä√ñ√àB √Ç √ê√Ä√á√ç√õ√ï √É√é√ê√é√Ñ√Ä√ï √Ç √í√Ö√ó√Ö√ç√à√Ö √é√Ñ√ç√é√É√é √ó√Ä√ë√Ä ' AS FRAUD_TYPE, SYSDATE AS REPORT_DT
 FROM (select a.trans_date as td, a.card_num as cn, a.terminal_city as tc ,b.trans_date as trans_date, b.card_num as card_num,b.terminal_city as terminal_city1, abs( a.trans_date -b.trans_date) as r , to_date('15-10-2021 06:17:37' , 'DD.MM.YYYY HH24:MI:ss') - to_date('15-10-2021 05:17:37' , 'DD.MM.YYYY HH24:MI:ss') as w  
               from (select a.* ,te.terminal_city  from fact_transactions a  join dim_terminals te  on a.terminal= te.terminal_id) a
                join (select a.* ,te.terminal_city  from fact_transactions a   join dim_terminals te  on a.terminal= te.terminal_id)  b 
@@ -44,24 +44,24 @@ JOIN DIM_CLIENTS C
 ON A.CLIENT = C.CLIENT_ID
 
 UNION ALL
-/* 4)œÓÔ˚ÚÍ‡ ÔÓ‰·Ó‡ ÒÛÏÏ.¬ ÚÂ˜ÂÌËÂ 20 ÏËÌÛÚ ÔÓıÓ‰ËÚ ·ÓÎÂÂ 3ı ÓÔÂ‡ˆËÈ ÒÓ ÒÎÂ‰Û˛˘ËÏ ¯‡·ÎÓÌÓÏ - Í‡Ê‰‡ˇ
-ÔÓÒÎÂ‰Û˛˘‡ˇ ÏÂÌ¸¯Â ÔÂ‰˚‰Û˘ÂÈ ÔË ˝ÚÓÏ ÓÚÍÎÓÌÂÌ˚ ‚ÒÂ ÍÓÏÂ ÔÓÒÎÂ‰ÌÂÈ.œÓÒÎÂ‰Ìˇˇ ÓÔÂ‡ˆËˇ (ÛÒÔÂ¯Ì‡ˇ) ‚ Ú‡ÍÓÈ ˆÂÔÓ˜ÍÂ Ò˜ËÚ‡ÂÚÒˇ ÏÓ¯ÂÌÌË˜ÂÒÍÓÈ.*/
+/* 4)√è√Æ√Ø√ª√≤√™√† √Ø√Æ√§√°√Æ√∞√† √±√≥√¨√¨.√Ç √≤√•√∑√•√≠√®√• 20 √¨√®√≠√≥√≤ √Ø√∞√Æ√µ√Æ√§√®√≤ √°√Æ√´√•√• 3√µ √Æ√Ø√•√∞√†√∂√®√© √±√Æ √±√´√•√§√≥√æ√π√®√¨ √∏√†√°√´√Æ√≠√Æ√¨ - √™√†√¶√§√†√ø
+√Ø√Æ√±√´√•√§√≥√æ√π√†√ø √¨√•√≠√º√∏√• √Ø√∞√•√§√ª√§√≥√π√•√© √Ø√∞√® √Ω√≤√Æ√¨ √Æ√≤√™√´√Æ√≠√•√≠√ª √¢√±√• √™√∞√Æ√¨√• √Ø√Æ√±√´√•√§√≠√•√©.√è√Æ√±√´√•√§√≠√ø√ø √Æ√Ø√•√∞√†√∂√®√ø (√≥√±√Ø√•√∏√≠√†√ø) √¢ √≤√†√™√Æ√© √∂√•√Ø√Æ√∑√™√• √±√∑√®√≤√†√•√≤√±√ø √¨√Æ√∏√•√≠√≠√®√∑√•√±√™√Æ√©.*/
 
-SELECT  t6. TRANS_DATE AS FRAUD_DT, c.PASSPORT_NUM AS PASSPORT,  C.LAST_NAME ||' '|| C.FIRST_NAME ||' '|| C.PATRINYMIC AS FIO, C.PHONE AS PHONE, 'œŒœ€“ ¿ œŒƒ¡Œ–¿ —”ÃÃ ' AS FRAUD_TYPE, SYSDATE  AS REPORT_DT           
+SELECT  t6. TRANS_DATE AS FRAUD_DT, c.PASSPORT_NUM AS PASSPORT,  C.LAST_NAME ||' '|| C.FIRST_NAME ||' '|| C.PATRINYMIC AS FIO, C.PHONE AS PHONE, '√è√é√è√õ√í√ä√Ä √è√é√Ñ√Å√é√ê√Ä √ë√ì√å√å ' AS FRAUD_TYPE, SYSDATE  AS REPORT_DT           
 FROM(SELECT T5.*
 FROM(SELECT T4.* , SUM(CC) OVER (PARTITION BY RAN, CARD_NUM )   AS SU2       
-FROM(SELECT T3.*,  count(AMT)  OVER (PARTITION BY  CARD_NUM,  RAN ORDER BY TRANS_DATE ROWS  BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING  ) AS CO, -- ¡ŒÀ≈≈ “–≈’ Œœ≈–¿÷»… 
+FROM(SELECT T3.*,  count(AMT)  OVER (PARTITION BY  CARD_NUM,  RAN ORDER BY TRANS_DATE ROWS  BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING  ) AS CO, -- √Å√é√ã√Ö√Ö √í√ê√Ö√ï √é√è√Ö√ê√Ä√ñ√à√â 
                                   LEAD(amt) OVER (PARTITION BY card_num ORDER BY trans_date) AS LS,  
-                                  CASE WHEN  Amt>COALESCE(LEAD(amt) OVER (PARTITION BY card_num ORDER BY trans_date),0) THEN 0 ELSE 1 END AS CC -- ¬€ﬂ¬Àﬂ≈Ã Œœ≈–¿÷»» Õ≈ —ŒŒ“¬≈“—“¬”ﬁŸ»≈ ”—ÀŒ¬»ﬁ  ¿∆ƒ¿ﬂ Ã≈Õ‹ÿ≈ œ–≈ƒ»ƒ”Ÿ≈…
-            FROM(SELECT T2.*, DENSE_RANK() OVER (PARTITION BY CARD_NUM  ORDER BY TIM) AS RAN  --–¿Õ∆»–”≈Ã Œœ≈–¿÷»» , Œ“Œ–€≈ ¬’Œƒﬂ“ ¬ »Õ“≈–¬¿À » Õ≈ ¬’Œƒﬂ“
+                                  CASE WHEN  Amt>COALESCE(LEAD(amt) OVER (PARTITION BY card_num ORDER BY trans_date),0) THEN 0 ELSE 1 END AS CC -- √Ç√õ√ü√Ç√ã√ü√Ö√å √é√è√Ö√ê√Ä√ñ√à√à √ç√Ö √ë√é√é√í√Ç√Ö√í√ë√í√Ç√ì√û√ô√à√Ö √ì√ë√ã√é√Ç√à√û √ä√Ä√Ü√Ñ√Ä√ü √å√Ö√ç√ú√ò√Ö √è√ê√Ö√Ñ√à√Ñ√ì√ô√Ö√â
+            FROM(SELECT T2.*, DENSE_RANK() OVER (PARTITION BY CARD_NUM  ORDER BY TIM) AS RAN  --√ê√Ä√ç√Ü√à√ê√ì√Ö√å √é√è√Ö√ê√Ä√ñ√à√à ,√ä√é√í√é√ê√õ√Ö √Ç√ï√é√Ñ√ü√í √Ç √à√ç√í√Ö√ê√Ç√Ä√ã √à √ç√Ö √Ç√ï√é√Ñ√ü√í
                           FROM (select t.*,count(AMT)  OVER (PARTITION BY  CARD_NUM  ORDER BY TRANS_DATE ROWS  BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING  ) AS SU,
                                                    FIRST_VALUE(TRANS_DATE) OVER (PARTITION BY  CARD_NUM ORDER BY trans_date ) AS F,
                                                    FIRST_VALUE(TRANS_DATE) OVER (PARTITION BY  CARD_NUM ORDER BY trans_date ) + ( to_date('15-10-2021 06:20:00' , 'DD.MM.YYYY HH24:MI:ss') - to_date('15-10-2021 06:00:00' , 'DD.MM.YYYY HH24:MI:ss')) AS FV,
                                                    CASE WHEN TRANS_DATE BETWEEN  FIRST_VALUE(TRANS_DATE) OVER (PARTITION BY  CARD_NUM ORDER BY trans_date ) AND
                                                    FIRST_VALUE(TRANS_DATE) OVER (PARTITION BY  CARD_NUM ORDER BY trans_date ) + ( to_date('15-10-2021 06:20:00' , 'DD.MM.YYYY HH24:MI:ss') - to_date('15-10-2021 06:00:00' , 'DD.MM.YYYY HH24:MI:ss')) 
-                                                   THEN 1 ELSE 0 END AS TIM --¬’Œƒ»“ À» Œœ≈–¿÷»ﬂ ¬ »Õ“≈–¬¿À 20 Ã»Õ
+                                                   THEN 1 ELSE 0 END AS TIM --√Ç√ï√é√Ñ√à√í √ã√à √é√è√Ö√ê√Ä√ñ√à√ü √Ç √à√ç√í√Ö√ê√Ç√Ä√ã 20 √å√à√ç
                                        from FACT_TRANSACTIONS   t  )  t2 )T3 )T4 )T5
-WHERE SU2=0 AND t5.CO >=3 AND t5.OPER_RESULT = '”ÒÔÂ¯ÌÓ' and oper_type != 'œÓÔÓÎÌÂÌËÂ') T6
+WHERE SU2=0 AND t5.CO >=3 AND t5.OPER_RESULT = '√ì√±√Ø√•√∏√≠√Æ' and oper_type != '√è√Æ√Ø√Æ√´√≠√•√≠√®√•') T6
 JOIN DIM_CARDS C
 ON C.CARD_NUM = T6.CARD_NUM
 JOIN DIM_ACCOUNTS A

@@ -33,8 +33,9 @@ END;
 CREATE OR REPLACE PROCEDURE ENCRIMENT_AND_UPLOAD
 IS
 BEGIN
-----------------------ÂÛÄÅËÅÍÈÅ ÈÍÊÐÈÌÅÍÒÀ È ÇÀÃÐÓÇÊÀ Â ÒÀÁËÈÖÛ
--- Âûäåëåíèå è çàãðóçêà  èíêðåìåíòà â stg
+---------------------ВЫДЕЛЕНИЕ ИНКРИМЕНТА И ЗАГРУЗКА В ТАБЛИЦЫ
+-- Выделение и загрузка  инкремента в stg
+
 insert into STG_ALL
 select * from SRC_ALL 
 where (to_date(DATEE,'dd.mm.yyyy hh24:mi:ss')) > ( select max_dt_update 
@@ -43,7 +44,7 @@ where (to_date(DATEE,'dd.mm.yyyy hh24:mi:ss')) > ( select max_dt_update
                                                                                     and tbl_name='FACT_TRANSACTIONS');
 COMMIT;
 
-----ÇÀÃÐÓÇÊÀ Â ÒÀÁËÈÖÓ DIM_CLIENTS
+----ЗАГРУЗКА В ТАБЛИЦУ DIM_CLIENTS
 merge into DIM_CLIENTS  cl
 using (select distinct client AS CLIENT_ID , last_name, first_name, patronymic AS PATRINYMIC, date_of_birth,passport AS PASSPORT_NUM, passport_valid_to, phone , trunc(TO_DATE(datee, 'DD.MM.YYYY HH24:MI:ss')) AS CREATE_DT ,trunc(TO_DATE(datee, 'DD.MM.YYYY HH24:MI:ss'))   as UPDATE_DT 
           FROM (SELECT A. * FROM STG_ALL  A
@@ -57,7 +58,7 @@ when not matched then insert (cl.CLIENT_ID, cl.LAST_NAME, cl.FIRST_NAME, cl.PATR
                                      values (stg.client_ID, stg.last_name, stg.first_name, stg.patrinymic,stg.date_of_birth, stg.passport_NUM, stg.passport_valid_to , stg.phone, stg.CREATE_DT , stg.UPDATE_DT);
 commit;
 
-----ÇÀÃÐÓÇÊÀ Â ÒÀÁËÈÖÓ DIM_TERMINALS
+----ЗАГРУЗКА В ТАБЛИЦУ DIM_TERMINALS
 merge into DIM_terminals  te
 using (select distinct terminal, terminal_type, city, address,  trunc(TO_DATE(datee, 'DD.MM.YYYY HH24:MI:ss')) as dd from  STG_ALL )stg 
 on (te.terminal_id = stg.terminal)
@@ -71,7 +72,7 @@ when not matched then insert (te.terminal_id,  te.terminal_type, te.terminal_cit
 commit;
 
 
-----ÓÊËÀÄÊÀ ÈÍÑÅÐÒ È ÀÏÄÅÉÒ ÇÀÏÈÑÅÉ Â  ÒÀÁËÈÖÓ ÏÐÈÅÌÍÈÊ DIM_ACCOUNTS 
+----УКЛАДКА ИНСЕРТ И АПДЕЙТ ЗАПИСЕЙ В  ТАБЛИЦУ ПРИЕМНИК DIM_ACCOUNTS  
 merge into DIM_ACCOUNTS  ac
 using (select distinct account, account_valid_to, client, trunc(TO_DATE(datee, 'DD.MM.YYYY HH24:MI:ss')) as dd from  STG_ALL ) stg 
 on (AC.ACCOUNT_NUM = stg.account)
@@ -83,7 +84,7 @@ when not matched then insert (AC.ACCOUNT_NUM, AC.VALID_TO,AC.CLIENT,AC.CREATE_DT
                                      values (stg.ACCOUNT, stg.ACCOUNT_VALID_TO, STG.CLIENT, stg.dd, STG.DD);
 commit;
 
-----ÓÊËÀÄÊÀ ÈÍÑÅÐÒ È ÀÏÄÅÉÒ ÇÀÏÈÑÅÉ Â  ÒÀÁËÈÖÓ ÏÐÈÅÌÍÈÊ DIM_CARDS
+----УКЛАДКА ИНСЕРТ И АПДЕЙТ ЗАПИСЕЙ В  ТАБЛИЦУ ПРИЕМНИК DIM_CARDS
 merge into DIM_cards  ca
 using ( select distinct card, account, trunc(TO_DATE(datee, 'DD.MM.YYYY HH24:MI:ss')) as dd  from stg_all ) stg 
 on (ca.card_num = stg.card)
@@ -94,7 +95,7 @@ when not matched then insert (ca.card_num,  ca.account_num, ca.CREATE_DT , CA.UP
                                      values (stg.card, stg.ACCOUnt,  stg.dd, STG.DD);
 commit;
 
---ÇÀÃÐÓÇÊÀ ÒÐÀÍÇÀÊÖÈÉ Â ÔÀÊÒ-ÒÐÀÇÀÊÖÈÎÍÑ
+--ЗАГРУЗКА ТРАНЗАКЦИЙ В ФАКТ-ТРАЗАКЦИОНС
 
   
 insert into FACT_TRANSACTIONS (TRANS_ID , TRANS_DATE, CARD_NUM, OPER_TYPE, AMT, OPER_RESULT, TERMINAL)
@@ -111,7 +112,7 @@ END;
 CREATE OR REPLACE PROCEDURE META_UPDATE
 IS
 BEGIN    
-/*6 Îáíîâëåíèå ìåòà-äàííûõ*/
+/*6 Обновление мета-данных*/
 update META set max_dt_update = (select max(to_date(DATEE,'dd.mm.yyyy hh24:mi:ss')) from STG_ALL) WHERE  db_name='ANTONOVA'
         and tbl_name='FACT_TRANSACTIONS';
 update META set max_dt_update = (select max(to_date(DATEE,'dd.mm.yyyy hh24:mi:ss')) from STG_ALL) WHERE  db_name='ANTONOVA'
@@ -123,7 +124,7 @@ update META set max_dt_update = (select max(to_date(DATEE,'dd.mm.yyyy hh24:mi:ss
 update META set max_dt_update = (select max(to_date(DATEE,'dd.mm.yyyy hh24:mi:ss')) from STG_ALL) WHERE  db_name='ANTONOVA'
         and tbl_name='DIM_CLIENTS';
 commit;
---Î×ÈÑÒÊÀ ÑÒÅÉÄÆÈÍÃÀ
+--ОЧИСТКА СТЕЙДЖИНГА
 DELETE STG_ALL;
 COMMIT;
 END;

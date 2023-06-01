@@ -2,7 +2,7 @@
 CREATE OR REPLACE PROCEDURE META_FIRST_TIME
 IS
 BEGIN
--- «¿œŒÀÕ≈Õ»≈ “¿¡À»÷€ Ã≈“¿ ƒ¿ÕÕ€’ ƒÀﬂ œ≈–¬Œ… «¿√–”« » 
+-- –ó–ê–ü–û–õ–ù–ï–ù–ò–ï –¢–ê–ë–õ–ò–¶–´ –ú–ï–¢–ê –î–ê–ù–ù–´–• –î–õ–Ø –ü–ï–†–í–û–ô –ó–ê–ì–†–£–ó–ö–ò  
 insert into META
 select 'ANTONOVA', 'FACT_TRANSACTIONS', to_date('01.01.1800', 'dd.mm.yyyy') from dual
 where (select count(*) from META where db_name='ANTONOVA' and tbl_name='FACT_TRANSACTIONS')=0;
@@ -33,8 +33,8 @@ END;
 CREATE OR REPLACE PROCEDURE ENCRIMENT_AND_UPLOAD
 IS
 BEGIN
-----------------------¬€ƒ≈À≈Õ»≈ »Õ –»Ã≈Õ“¿ » «¿√–”« ¿ ¬ “¿¡À»÷€
--- ¬˚‰ÂÎÂÌËÂ Ë Á‡„ÛÁÍ‡  ËÌÍÂÏÂÌÚ‡ ‚ stg
+----------------------√Ç√õ√Ñ√Ö√ã√Ö√ç√à√Ö √à√ç√ä√ê√à√å√Ö√ç√í√Ä √à √á√Ä√É√ê√ì√á√ä√Ä √Ç √í√Ä√Å√ã√à√ñ√õ
+-- √Ç√ª√§√•√´√•√≠√®√• √® √ß√†√£√∞√≥√ß√™√†  √®√≠√™√∞√•√¨√•√≠√≤√† √¢ stg
 insert into STG_ALL
 select * from SRC_ALL 
 where (to_date(DATEE,'dd.mm.yyyy hh24:mi:ss')) > ( select max_dt_update 
@@ -43,7 +43,7 @@ where (to_date(DATEE,'dd.mm.yyyy hh24:mi:ss')) > ( select max_dt_update
                                                                                     and tbl_name='FACT_TRANSACTIONS');
 COMMIT;
 
-----«¿√–”« ¿ ¬ “¿¡À»÷” DIM_CLIENTS
+----√á√Ä√É√ê√ì√á√ä√Ä √Ç √í√Ä√Å√ã√à√ñ√ì DIM_CLIENTS
 merge into DIM_CLIENTS  cl
 using (select distinct client AS CLIENT_ID , last_name, first_name, patronymic AS PATRINYMIC, date_of_birth,passport AS PASSPORT_NUM, passport_valid_to, phone , trunc(TO_DATE(datee, 'DD.MM.YYYY HH24:MI:ss')) AS CREATE_DT ,trunc(TO_DATE(datee, 'DD.MM.YYYY HH24:MI:ss'))   as UPDATE_DT 
           FROM (SELECT A. * FROM STG_ALL  A
@@ -57,7 +57,7 @@ when not matched then insert (cl.CLIENT_ID, cl.LAST_NAME, cl.FIRST_NAME, cl.PATR
                                      values (stg.client_ID, stg.last_name, stg.first_name, stg.patrinymic,stg.date_of_birth, stg.passport_NUM, stg.passport_valid_to , stg.phone, stg.CREATE_DT , stg.UPDATE_DT);
 commit;
 
-----«¿√–”« ¿ ¬ “¿¡À»÷” DIM_TERMINALS
+----√á√Ä√É√ê√ì√á√ä√Ä √Ç √í√Ä√Å√ã√à√ñ√ì DIM_TERMINALS
 merge into DIM_terminals  te
 using (select distinct terminal, terminal_type, city, address,  trunc(TO_DATE(datee, 'DD.MM.YYYY HH24:MI:ss')) as dd from  STG_ALL )stg 
 on (te.terminal_id = stg.terminal)
@@ -71,7 +71,7 @@ when not matched then insert (te.terminal_id,  te.terminal_type, te.terminal_cit
 commit;
 
 
-----” À¿ƒ ¿ »Õ—≈–“ » ¿œƒ≈…“ «¿œ»—≈… ¬  “¿¡À»÷” œ–»≈ÃÕ»  DIM_ACCOUNTS 
+----√ì√ä√ã√Ä√Ñ√ä√Ä √à√ç√ë√Ö√ê√í √à √Ä√è√Ñ√Ö√â√í √á√Ä√è√à√ë√Ö√â √Ç  √í√Ä√Å√ã√à√ñ√ì √è√ê√à√Ö√å√ç√à√ä DIM_ACCOUNTS 
 merge into DIM_ACCOUNTS  ac
 using (select distinct account, account_valid_to, client, trunc(TO_DATE(datee, 'DD.MM.YYYY HH24:MI:ss')) as dd from  STG_ALL ) stg 
 on (AC.ACCOUNT_NUM = stg.account)
@@ -83,7 +83,7 @@ when not matched then insert (AC.ACCOUNT_NUM, AC.VALID_TO,AC.CLIENT,AC.CREATE_DT
                                      values (stg.ACCOUNT, stg.ACCOUNT_VALID_TO, STG.CLIENT, stg.dd, STG.DD);
 commit;
 
-----” À¿ƒ ¿ »Õ—≈–“ » ¿œƒ≈…“ «¿œ»—≈… ¬  “¿¡À»÷” œ–»≈ÃÕ»  DIM_CARDS
+----√ì√ä√ã√Ä√Ñ√ä√Ä √à√ç√ë√Ö√ê√í √à √Ä√è√Ñ√Ö√â√í √á√Ä√è√à√ë√Ö√â √Ç  √í√Ä√Å√ã√à√ñ√ì √è√ê√à√Ö√å√ç√à√ä DIM_CARDS
 merge into DIM_cards  ca
 using ( select distinct card, account, trunc(TO_DATE(datee, 'DD.MM.YYYY HH24:MI:ss')) as dd  from stg_all ) stg 
 on (ca.card_num = stg.card)
@@ -94,7 +94,7 @@ when not matched then insert (ca.card_num,  ca.account_num, ca.CREATE_DT , CA.UP
                                      values (stg.card, stg.ACCOUnt,  stg.dd, STG.DD);
 commit;
 
---«¿√–”« ¿ “–¿Õ«¿ ÷»… ¬ ‘¿ “-“–¿«¿ ÷»ŒÕ—
+--√á√Ä√É√ê√ì√á√ä√Ä √í√ê√Ä√ç√á√Ä√ä√ñ√à√â √Ç √î√Ä√ä√í-√í√ê√Ä√á√Ä√ä√ñ√à√é√ç√ë
 
   
 insert into FACT_TRANSACTIONS (TRANS_ID , TRANS_DATE, CARD_NUM, OPER_TYPE, AMT, OPER_RESULT, TERMINAL)
@@ -111,7 +111,7 @@ END;
 CREATE OR REPLACE PROCEDURE META_UPDATE
 IS
 BEGIN    
-/*6 Œ·ÌÓ‚ÎÂÌËÂ ÏÂÚ‡-‰‡ÌÌ˚ı*/
+/*6 √é√°√≠√Æ√¢√´√•√≠√®√• √¨√•√≤√†-√§√†√≠√≠√ª√µ*/
 update META set max_dt_update = (select max(to_date(DATEE,'dd.mm.yyyy hh24:mi:ss')) from STG_ALL) WHERE  db_name='ANTONOVA'
         and tbl_name='FACT_TRANSACTIONS';
 update META set max_dt_update = (select max(to_date(DATEE,'dd.mm.yyyy hh24:mi:ss')) from STG_ALL) WHERE  db_name='ANTONOVA'
@@ -123,7 +123,7 @@ update META set max_dt_update = (select max(to_date(DATEE,'dd.mm.yyyy hh24:mi:ss
 update META set max_dt_update = (select max(to_date(DATEE,'dd.mm.yyyy hh24:mi:ss')) from STG_ALL) WHERE  db_name='ANTONOVA'
         and tbl_name='DIM_CLIENTS';
 commit;
---Œ◊»—“ ¿ —“≈…ƒ∆»Õ√¿
+--√é√ó√à√ë√í√ä√Ä √ë√í√Ö√â√Ñ√Ü√à√ç√É√Ä
 DELETE STG_ALL;
 COMMIT;
 END;
